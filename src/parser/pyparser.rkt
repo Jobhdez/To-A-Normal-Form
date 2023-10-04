@@ -65,9 +65,9 @@
                 [(expr statements) (cons $1 $2)]]
     [statement [(PRINT LPAREN expr RPAREN) (py-print $3)]
                [(expr) $1]
-               [(ID ASSIGN expr) (py-assign (py-id $1) $3)]
-               [(statements WHILE expr COLON statements SEMICOLON)
-                (py-while $1 $3 $5)]
+               [(ID ASSIGN expr SEMICOLON) (py-assign (py-id $1) $3)]
+               [(WHILE expr COLON statements SEMICOLON)
+                (py-while $1 $3)]
                [(IF expr COLON statements ELSE COLON statements)
                 (py-if $2 $4 $7)]
                [(DEF ID LPAREN args RPAREN COLON statements SEMICOLON)
@@ -108,5 +108,5 @@
               (py-greater-eq $1 $3)]]           
     [bool     [(TRUE) $1]
               [(FALSE) $1]]
-    [args    [(ID) $1]
+    [args    [(ID) (py-id $1)]
              [(ID args) (list $1 $2)]]]))
