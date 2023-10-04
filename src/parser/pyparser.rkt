@@ -2,11 +2,11 @@
 
 (provide the-parser)
 
-(require "nodes.rkt")
-
-(require parser-tools/yacc
+(require "nodes.rkt"
+         parser-tools/yacc
          parser-tools/lex
-         (prefix-in : parser-tools/lex-sre))
+         (prefix-in : parser-tools/lex-sre)
+
 
 
 
