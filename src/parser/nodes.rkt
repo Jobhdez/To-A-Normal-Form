@@ -25,3 +25,31 @@
 (struct py-bool (b1) #:transparent)
 
 (struct py-neg (n) #:transparent)
+
+(struct py-cmp (e) #:transparent)
+
+(struct py-and (e e2) #:transparent)
+
+(struct py-or (e e2) #:transparent)
+
+(struct py-not (e) #:transparent)
+
+(struct py-tuple (t) #:transparent)
+
+(struct py-tuple-index (t) #:transparent)
+
+(struct py-tuple-len (t) #:transparent)
+
+(struct py-if-exp (if-exp cond-exp else-exp) #:transparent)
+
+(struct py-greater (e e2) #:transparent)
+
+(struct py-greater-eq (e e2) #:transparent)
+
+(struct py-less (e e2) #:transparent)
+
+(struct py-less-eq (e e2) #:transparent)
+
+(struct py-equiv (e e2) #:transparent)
+
+(struct py-not-equiv (e e2) #:transparent)
