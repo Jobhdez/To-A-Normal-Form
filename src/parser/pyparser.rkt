@@ -1,20 +1,21 @@
 #lang racket
 
-(provide the-parser)
+(provide the-parser
+         the-lexer/tokens)
 
 (require "nodes.rkt"
          parser-tools/yacc
          parser-tools/lex
-         (prefix-in : parser-tools/lex-sre)
+         (prefix-in : parser-tools/lex-sre))
 
 
 
 
-(define-tokens value-tokens (NUM ID PLUS MINUS ASSIGN PRINT FUN AND OR NOT IF ELSE WHILE MUL EQUIV NOTEQUIV GREAT LESS LESSEQ GREATEQ TRUE FALSE COLON LPAREN RPAREN))
+(define-tokens value-tokens (NUM ID PLUS MINUS ASSIGN PRINT DEF AND OR NOT IF ELSE WHILE MUL EQUIV NOTEQUIV GREATER LESS LESSEQ GREATEREQ TRUE FALSE COLON LPAREN RPAREN SEMICOLON RBRACKET LBRACKET LEN))
 
 (define-empty-tokens op-tokens (EOF))
 
-(define lexer/tokens
+(define the-lexer/tokens
   (lexer
    [(eof) 'EOF]
    ["+"     (token-PLUS (string->symbol lexeme))]
@@ -24,10 +25,10 @@
    ["=="    (token-EQUIV (string->symbol lexeme))]
    ["!="    (token-NOTEQUIV (string->symbol lexeme))]
    ["<"     (token-LESS (string->symbol lexeme))]
-   [">"     (token-GREAT (string->symbol lexeme))]
+   [">"     (token-GREATER (string->symbol lexeme))]
    ["<="    (token-LESSEQ (string->symbol lexeme))]
-   [">="    (token-GREATEQ (string->symbol lexeme))]
-   ["fun"   (token-FUN (string->symbol lexeme))]
+   [">="    (token-GREATEREQ (string->symbol lexeme))]
+   ["def"   (token-DEF (string->symbol lexeme))]
    ["and"   (token-AND (string->symbol lexeme))]
    ["or"    (token-OR (string->symbol lexeme))]
    ["not"   (token-NOT (string->symbol lexeme))]
@@ -37,14 +38,18 @@
    ["if"    (token-IF (string->symbol lexeme))]
    ["else"  (token-ELSE (string->symbol lexeme))]
    ["while" (token-WHILE (string->symbol lexeme))]
+   ["len"   (token-LEN (string->symbol lexeme))]
    [":"     (token-COLON (string->symbol lexeme))]
    ["("     (token-LPAREN (string->symbol lexeme))]
    [")"     (token-RPAREN (string->symbol lexeme))]
+   [";"     (token-SEMICOLON (string->symbol lexeme))]
    [(:+ numeric) (token-NUM (string->number lexeme))]
+   ["["     (token-LBRACKET (string->symbol lexeme))]
+   ["]"     (token-RBRACKET (string->symbol lexeme))]
    [(:: (:or alphabetic #\_)
         (:* (:or alphabetic numeric #\_)))
     (token-ID (string->symbol lexeme))]
-   [whitespace (lexer/tokens input-port)]))
+   [whitespace (the-lexer/tokens input-port)]))
 
 (define the-parser
   (parser
@@ -61,18 +66,46 @@
     [statement [(PRINT LPAREN expr RPAREN) (py-print $3)]
                [(expr) $1]
                [(ID ASSIGN expr) (py-assign (py-id $1) $3)]
-               [(statements WHILE expr COLON statements)
+               [(statements WHILE expr COLON statements SEMICOLON)
                 (py-while $1 $3 $5)]
                [(IF expr COLON statements ELSE COLON statements)
                 (py-if $2 $4 $7)]
-               [(FUN ID LPAREN args RPAREN COLON statements)
+               [(DEF ID LPAREN args RPAREN COLON statements SEMICOLON)
                 (py-fun $2 $4 $7)]]
     [expr     [(ID) (py-id $1)]
               [(NUM) (py-num $1)]
               [(MINUS NUM) (py-neg $2)]
+              [(expr IF expr ELSE expr)
+               (py-if-exp $1 $3 $5)]
               [(expr PLUS expr) (py-plus $1 $3)]
               [(expr MINUS expr) (py-minus $1 $3)]
+              [(compare) (py-cmp $1)]
+              [(expr AND expr) (py-and $1 $3)]
+              [(expr OR expr) (py-or $1 $3)]
+              [(NOT expr) (py-not $2)]
+              [(tuple) (py-tuple $1)]
+              [(tuple-index) (py-tuple-index $1)]
+              [(tuple-len) (py-tuple-len $1)]
               [(bool) (py-bool $1)]]
+    [tuple    [(LPAREN elements RPAREN) (list $2)]]
+    [elements [(NUM) (py-num $1)]
+              [(NUM elements) (list $1 $2)]]
+    [tuple-index [(expr LBRACKET NUM RBRACKET)
+                  (py-tuple-index $1 $3)]]
+    [tuple-len [(LEN LPAREN expr RPAREN)
+                (py-tuple-len $3)]]
+    [compare [(expr EQUIV expr)
+              (py-equiv $1 $3)]
+             [(expr NOTEQUIV expr)
+              (py-not-equiv $1 $3)]
+             [(expr LESS expr)
+              (py-less $1 $3)]
+             [(expr LESSEQ expr)
+              (py-less-eq $1 $3)]
+             [(expr GREATER expr)
+              (py-greater $1 $3)]
+             [(expr GREATEREQ expr)
+              (py-greater-eq $1 $3)]]           
     [bool     [(TRUE) $1]
               [(FALSE) $1]]
     [args    [(ID) $1]
