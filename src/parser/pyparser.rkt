@@ -8,7 +8,30 @@
          parser-tools/lex
          (prefix-in : parser-tools/lex-sre))
 
+#|
+The concrete syntax of the language I will compile looks something like the following grammar:
 
+Grammar:
+
+exp ::= int | input_int() | - exp | exp + exp | exp - exp | (exp)
+stmt ::= print(exp) | exp
+exp ::= var
+stmt ::= var = exp
+cmp ::= == | != | < | <= | > | >=
+exp ::= True | False | exp and exp | exp or exp | not exp
+      | exp cmp exp | exp if exp else exp
+stmt ::= if exp: stmt+ else: stmt+
+stmt ::= while exp: stmt+
+cmp ::= is
+exp ::= exp, … ,exp | exp[int] | len(exp)
+type ::= int | bool | void | tuple[type+] | Callable[[type, … ], type]
+exp ::= exp(exp, … )
+stmt ::= return exp
+def ::= def var(var:type, … ) -> type: stmt+
+exp ::= lambda var, … : exp | arity(exp)
+stmt ::= var : type = exp
+LFun ::= def … stmt …
+|#
 
 
 (define-tokens value-tokens (NUM ID PLUS MINUS ASSIGN PRINT DEF AND OR NOT IF ELSE WHILE MUL EQUIV NOTEQUIV GREATER LESS LESSEQ GREATEREQ TRUE FALSE COLON LPAREN RPAREN SEMICOLON RBRACKET LBRACKET LEN))
