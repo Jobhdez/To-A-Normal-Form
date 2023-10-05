@@ -8,7 +8,7 @@
 
 (struct py-assign (var expr) #:transparent)
 
-(struct py-while (statements expr statements2) #:transparent)
+(struct py-while (expr statements) #:transparent)
 
 (struct py-if (expr statements statements2) #:transparent)
 
