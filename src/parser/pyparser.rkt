@@ -43,9 +43,9 @@
    ["("     (token-LPAREN (string->symbol lexeme))]
    [")"     (token-RPAREN (string->symbol lexeme))]
    [";"     (token-SEMICOLON (string->symbol lexeme))]
-   [(:+ numeric) (token-NUM (string->number lexeme))]
    ["["     (token-LBRACKET (string->symbol lexeme))]
    ["]"     (token-RBRACKET (string->symbol lexeme))]
+   [(:+ numeric) (token-NUM (string->number lexeme))]
    [(:: (:or alphabetic #\_)
         (:* (:or alphabetic numeric #\_)))
     (token-ID (string->symbol lexeme))]
