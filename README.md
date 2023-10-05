@@ -5,7 +5,7 @@ So far, as of 10/4/23, you can parse programs like this:
 
 ```racket
 > (require "pyparser.rkt")
-> (define p5 (open-input-string "(True and True) if (True and False) else 4"))
+> (define p5 (open-input-string "True and True; if True and False; else 4"))
 > (the-parser (lambda () (the-lexer/tokens p5)))
 (py-module
  (py-if-exp
