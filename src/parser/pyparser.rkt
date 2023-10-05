@@ -67,26 +67,26 @@
                [(expr) $1]
                [(ID ASSIGN expr SEMICOLON) (py-assign (py-id $1) $3)]
                [(WHILE expr COLON statements SEMICOLON)
-                (py-while $1 $3)]
-               [(IF expr COLON statements ELSE COLON statements)
+                (py-while $2 $4)]
+               [(IF expr COLON statements ELSE COLON statements SEMICOLON)
                 (py-if $2 $4 $7)]
                [(DEF ID LPAREN args RPAREN COLON statements SEMICOLON)
                 (py-fun $2 $4 $7)]]
     [expr     [(ID) (py-id $1)]
               [(NUM) (py-num $1)]
-              [(MINUS NUM) (py-neg $2)]
-              [(expr IF expr ELSE expr)
-               (py-if-exp $1 $3 $5)]
-              [(expr PLUS expr) (py-plus $1 $3)]
-              [(expr MINUS expr) (py-minus $1 $3)]
+              [(LPAREN MINUS NUM RPAREN) (py-neg $3)]
+              [(LPAREN expr PLUS expr RPAREN) (py-plus $2 $4)]
+              [(LPAREN expr MINUS expr RPAREN) (py-minus $2 $4)]
               [(compare) (py-cmp $1)]
-              [(expr AND expr) (py-and $1 $3)]
-              [(expr OR expr) (py-or $1 $3)]
-              [(NOT expr) (py-not $2)]
+              [(LPAREN expr AND expr RPAREN) (py-and $2 $4)]
+              [(LPAREN expr OR expr RPAREN) (py-or $2 $4)]
+              [(LPAREN NOT expr RPAREN) (py-not $3)]
               [(tuple) (py-tuple $1)]
               [(tuple-index) (py-tuple-index $1)]
               [(tuple-len) (py-tuple-len $1)]
-              [(bool) (py-bool $1)]]
+              [(bool) (py-bool $1)]
+              [(expr IF expr ELSE expr)
+               (py-if-exp $1 $3 $5)]]
     [tuple    [(LPAREN elements RPAREN) (list $2)]]
     [elements [(NUM) (py-num $1)]
               [(NUM elements) (list $1 $2)]]
