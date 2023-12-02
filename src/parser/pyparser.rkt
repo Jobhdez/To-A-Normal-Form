@@ -88,28 +88,40 @@ LFun ::= def … stmt …
                 [(expr statements) (cons $1 $2)]]
     [statement [(PRINT LPAREN expr RPAREN) (py-print $3)]
                [(expr) $1]
-               [(ID ASSIGN expr SEMICOLON) (py-assign (py-id $1) $3)]
-               [(WHILE expr COLON statements SEMICOLON)
+               [(ID ASSIGN expr) (py-assign (py-id $1) $3)]
+               [(WHILE expr COLON statements)
                 (py-while $2 $4)]
-               [(IF expr COLON statements ELSE COLON statements SEMICOLON)
+               [(IF expr COLON statements ELSE COLON statements)
                 (py-if $2 $4 $7)]
-               [(DEF ID LPAREN args RPAREN COLON statements SEMICOLON)
+               [(DEF ID LPAREN args RPAREN COLON statements)
                 (py-fun $2 $4 $7)]]
     [expr     [(ID) (py-id $1)]
               [(NUM) (py-num $1)]
-              [(MINUS NUM SEMICOLON) (py-neg $2)]
-              [(expr PLUS expr SEMICOLON) (py-plus $1 $3)]
-              [(expr MINUS expr SEMICOLON) (py-minus $1 $3)]
-              [(compare) (py-cmp $1)]
-              [(expr AND expr SEMICOLON) (py-and $1 $3)]
-              [(expr OR expr SEMICOLON) (py-or $1 $3)]
-              [(NOT expr SEMICOLON) (py-not $2)]
+              [(MINUS NUM) (py-neg $2)]
+              [(expr PLUS expr) (py-plus $1 $3)]
+              [(expr MINUS expr) (py-minus $1 $3)]
+              [(expr EQUIV expr)
+               (py-cmp (py-equiv $1 $3))]
+              [(expr NOTEQUIV expr)
+               (py-cmp (py-not-equiv $1 $3))]
+              [(expr LESS expr)
+               (py-cmp (py-less $1 $3))]
+              [(expr LESSEQ expr)
+               (py-cmp (py-less-eq $1 $3))]
+              [(expr GREATER expr)
+               (py-cmp (py-greater $1 $3))]
+              [(expr GREATEREQ expr)
+               (py-cmp (py-greater-eq $1 $3))]
+              [(TRUE) (py-bool $1)]
+              [(FALSE) (py-bool $1)]
+              [(expr AND expr) (py-and $1 $3)]
+              [(expr OR expr) (py-or $1 $3)]
+              [(NOT expr) (py-not $2)]
               [(tuple) (py-tuple $1)]
               [(tuple-index) (py-tuple-index $1)]
               [(tuple-len) (py-tuple-len $1)]
-              [(bool) (py-bool $1)]
               [(expr IF expr ELSE expr)
-               (py-if-exp $1 $3 $5)]]
+               (py-if-exp $1 $3 $5)]]]
     [tuple    [(LPAREN elements RPAREN) (list $2)]]
     [elements [(NUM) (py-num $1)]
               [(NUM elements) (list $1 $2)]]
@@ -117,19 +129,5 @@ LFun ::= def … stmt …
                   (py-tuple-index $1 $3)]]
     [tuple-len [(LEN LPAREN expr RPAREN)
                 (py-tuple-len $3)]]
-    [compare [(expr EQUIV expr)
-              (py-equiv $1 $3)]
-             [(expr NOTEQUIV expr)
-              (py-not-equiv $1 $3)]
-             [(expr LESS expr)
-              (py-less $1 $3)]
-             [(expr LESSEQ expr)
-              (py-less-eq $1 $3)]
-             [(expr GREATER expr)
-              (py-greater $1 $3)]
-             [(expr GREATEREQ expr)
-              (py-greater-eq $1 $3)]]           
-    [bool     [(TRUE) $1]
-              [(FALSE) $1]]
     [args    [(ID) (py-id $1)]
-             [(ID args) (list $1 $2)]]]))
+             [(ID args) (list $1 $2)]]))
