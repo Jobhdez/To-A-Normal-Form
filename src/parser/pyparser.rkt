@@ -34,7 +34,7 @@ LFun ::= def … stmt …
 |#
 
 
-(define-tokens value-tokens (NUM ID PLUS MINUS ASSIGN PRINT DEF AND OR NOT IF ELSE WHILE MUL EQUIV NOTEQUIV GREATER LESS LESSEQ GREATEREQ TRUE FALSE COLON LPAREN RPAREN SEMICOLON RBRACKET LBRACKET LEN))
+(define-tokens value-tokens (NUM ID PLUS MINUS ASSIGN PRINT DEF AND OR NOT IF ELSE WHILE MUL EQUIV NOTEQUIV GREATER LESS LESSEQ GREATEREQ TRUE FALSE COLON LPAREN RPAREN SEMICOLON RBRACKET LBRACKET LEN THEN))
 
 (define-empty-tokens op-tokens (EOF))
 
@@ -58,6 +58,7 @@ LFun ::= def … stmt …
    ["False" (token-FALSE (string->symbol lexeme))]
    ["True"  (token-TRUE (string->symbol lexeme))]
    ["print" (token-PRINT (string->symbol lexeme))]
+   ["then" (token-THEN (string->symbol lexeme))]
    ["if"    (token-IF (string->symbol lexeme))]
    ["else"  (token-ELSE (string->symbol lexeme))]
    ["while" (token-WHILE (string->symbol lexeme))]
@@ -81,11 +82,11 @@ LFun ::= def … stmt …
    [error void]
    [tokens value-tokens op-tokens]
    [grammar
-    [py-module [(statements) (py-module $1)]]
+    [py-module [(statements) (py-module (flatten (list $1)))]]
     [statements [(statement) $1]
                 [(expr) $1]
-                [(statement statements) (cons $1 $2)]
-                [(expr statements) (cons $1 $2)]]
+                [(statement statements) (list $1 $2)]
+                [(expr statements) (list $1 $2)]]
     [statement [(PRINT LPAREN expr RPAREN) (py-print $3)]
                [(expr) $1]
                [(ID ASSIGN expr) (py-assign (py-id $1) $3)]
@@ -97,6 +98,8 @@ LFun ::= def … stmt …
                 (py-fun $2 $4 $7)]]
     [expr     [(ID) (py-id $1)]
               [(NUM) (py-num $1)]
+              [(IF expr THEN expr ELSE expr)
+               (py-if-exp $2 $4 $6)]
               [(MINUS NUM) (py-neg $2)]
               [(expr PLUS expr) (py-plus $1 $3)]
               [(expr MINUS expr) (py-minus $1 $3)]
@@ -117,17 +120,14 @@ LFun ::= def … stmt …
               [(expr AND expr) (py-and $1 $3)]
               [(expr OR expr) (py-or $1 $3)]
               [(NOT expr) (py-not $2)]
-              [(tuple) (py-tuple $1)]
-              [(tuple-index) (py-tuple-index $1)]
-              [(tuple-len) (py-tuple-len $1)]
-              [(expr IF expr ELSE expr)
-               (py-if-exp $1 $3 $5)]]]
-    [tuple    [(LPAREN elements RPAREN) (list $2)]]
+              [(LPAREN elements RPAREN) (py-tuple (list $2))]
+              [(expr LBRACKET NUM RBRACKET)
+               (py-tuple-index $1 $3)]
+              [(LEN LPAREN expr RPAREN)
+                (py-tuple-len $3)]]
     [elements [(NUM) (py-num $1)]
               [(NUM elements) (list $1 $2)]]
-    [tuple-index [(expr LBRACKET NUM RBRACKET)
-                  (py-tuple-index $1 $3)]]
-    [tuple-len [(LEN LPAREN expr RPAREN)
-                (py-tuple-len $3)]]
     [args    [(ID) (py-id $1)]
-             [(ID args) (list $1 $2)]]))
+             [(ID args) (list $1 $2)]]]))
+
+ 
