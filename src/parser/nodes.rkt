@@ -4,6 +4,8 @@
 
 (struct py-module (statements) #:transparent)
 
+(struct py-statements (statements) #:transparent)
+
 (struct py-print  (expr) #:transparent)
 
 (struct py-assign (var expr) #:transparent)
