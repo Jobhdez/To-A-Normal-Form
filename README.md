@@ -4,12 +4,12 @@ will be a compiler for a high level language. I did a similar one in common lisp
 So far, as of 10/4/23, you can parse programs like this:
 
 ```racket
-> (require "pyparser.rkt")
-> (define p5 (open-input-string "True and True; if True and False; else 4"))
-> (the-parser (lambda () (the-lexer/tokens p5)))
+pyparser.rkt> (define p3 (open-input-string "x = 4 y = 5 z = 4 if True then z + x else z+y"))
+pyparser.rkt> (the-parser (lambda () (the-lexer/tokens p3)))
 (py-module
- (py-if-exp
-  (py-and (py-bool 'True) (py-bool 'True))
-  (py-and (py-bool 'True) (py-bool 'False))
-  (py-num 4)))
+ (list
+  (py-assign (py-id 'x) (py-num 4))
+  (py-assign (py-id 'y) (py-num 5))
+  (py-assign (py-id 'z) (py-num 4))
+  (py-if-exp (py-bool 'True) (py-plus (py-id 'z) (py-id 'x)) (py-plus (py-id 'z) (py-id 'y)))))
 ```
