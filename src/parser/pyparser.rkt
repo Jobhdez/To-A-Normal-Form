@@ -8,6 +8,8 @@
          parser-tools/lex
          (prefix-in : parser-tools/lex-sre))
 
+
+
 #|
 The concrete syntax of the language I will compile looks something like the following grammar:
 
@@ -19,12 +21,12 @@ exp ::= var
 stmt ::= var = exp
 cmp ::= == | != | < | <= | > | >=
 exp ::= True | False | exp and exp | exp or exp | not exp
-      | exp cmp exp | exp if exp else exp
+| exp cmp exp | exp if exp else exp
 stmt ::= if exp: stmt+ else: stmt+
 stmt ::= while exp: stmt+
 cmp ::= is
 exp ::= exp, … ,exp | exp[int] | len(exp)
-type ::= int | bool | void | tuple[type+] | Callable[[type, … ], type]
+type ::= int | bool | void | tuple[type+] | Callable[[type, … ], typ
 exp ::= exp(exp, … )
 stmt ::= return exp
 def ::= def var(var:type, … ) -> type: stmt+
@@ -129,5 +131,3 @@ LFun ::= def … stmt …
               [(NUM elements) (list $1 $2)]]
     [args    [(ID) (py-id $1)]
              [(ID args) (list $1 $2)]]]))
-
- 
