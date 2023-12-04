@@ -3,7 +3,8 @@
 (provide program-to-a-normal-form)
 
 (require "../parser/pyparser.rkt"
-         "../parser/nodes.rkt")
+         "../parser/nodes.rkt"
+         "a-nodes.rkt")
 
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
@@ -111,10 +112,6 @@
        [(atomic (py-num n2))
         (list e2 (atomic-assignment var (atomic (py-num n2))))])]
     [_ "hello"]))
-
-(struct atomic (atom) #:transparent)
-
-(struct atomic-assignment (var expr) #:transparent)
 
 (define (a-normal-minus e e2)
   "hello")
