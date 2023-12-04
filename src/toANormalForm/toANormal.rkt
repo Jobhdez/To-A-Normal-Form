@@ -3,8 +3,7 @@
 (provide program-to-a-normal-form)
 
 (require "../parser/pyparser.rkt"
-         "../parser/nodes.rkt"
-         "a-nodes.rkt")
+         "../parser/nodes.rkt")
 
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
@@ -12,15 +11,52 @@
 ;;; this module takes the AST for the parse tree and turns it into
 ;;; a-normal-form.
 ;;;
+;;; Examples:
+;;;     x = 10 + -50
+;;;     y = 4 + -60
+;;;     z = 4 + 5
+;;;     k = 5 + -3
+;;;     s = x + y
+;;;     u = z + k
+;;;     print(s + u)
+;;;     --->
+;;;     --->
+;;;     temp = -50
+;;;     x = 10 + temp
+;;;     temp2 = -60
+;;;     y = 4 + temp2
+;;;     z = 4 + 5
+;;;     temp3 = -3
+;;;     k = 5 + temp3
+;;;     s = x + y
+;;;     u = z + k
+;;;     temp4 = s + u
+;;;     print(temp4)
+;;;
+;;; Example 2:
+;;;     10 + -30
+;;;     --->
+;;;     --->
+;;;     temp = -30
+;;;     10 + temp 
+;;;
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
 (define (program-to-a-normal-form ast)
+  (define (generate-temp-name name)
+    (let* [(counter 0)
+          (name* (string-append name (number->string counter)))]
+      (begin (set! counter (+ counter 1))
+             name*)))
+  
   (define (to-normal-form ast)
     (match ast
       [(py-num n)
-       (if (positive? n)
-           (atomic ast)
-           (a-normalize-negative-number ast))]
+       (atomic ast)]
+      
+      [(py-neg n)
+       (atomic-assignment (atomic (py-id (generate-temp-name "temp_")))
+                         ast)]
 
       [(py-id n)
        (atomic ast)]
@@ -29,13 +65,15 @@
        (atomic ast)]
 
       [(py-plus e e2)
-       (a-normal-plus (to-normal-form e) (to-normal-form e2))]
+       (if (and (py-num? e) (py-neg? e2))
+           (a-normal-plus (to-normal-form e) (to-normal-form e2))
+           'hello)]
 
       [(py-minus e e2)
        (a-normal-minus (to-normal-form e) (to-normal-form e2))]
 
-      [(py-cmp e e2)
-       (a-normal-compare (to-normal-form e) (to-normal-form e2))]
+      [(py-cmp e)
+       (a-normal-compare (to-normal-form e))]
 
       [(py-if-exp cond-exp then-exp else-exp)
        (a-normalize-if-expression ast)]
@@ -57,11 +95,44 @@
 
       [_ (raise-argument-error 'Invalid-Exp-AST "ast?" ast)]))
 
-  (map to-normal-form ast))
+  (flatten (map to-normal-form (py-module-statements ast))))
 
-(define (a-normalize-negative-number ast)
-  (match ast
-    [(py-neg e)
-     (let [(var-name (generate-name "temp_"))]
-       (a-normal-assign (atomic (py-id var-name)) ast))]
-    [_ (raise-argument-error 'Invalid-Exp "py-neg?" e)]))
+
+(define (a-normal-assign var e)
+  (match e
+    [(list (atomic-assignment var2 (py-neg expr)) (atomic-assignment var3 (atomic (py-num expr2))))
+     (list (first e) (atomic-assignment var (py-plus var3 (atomic (py-num expr2)))))]
+    [_ (raise-argument-error 'Invalid-Exp "ast?" e)]))
+
+(define (a-normal-plus e e2)
+  (match e2
+    [(atomic-assignment var  (py-neg n))
+     (match e
+       [(atomic (py-num n2))
+        (list e2 (atomic-assignment var (atomic (py-num n2))))])]
+    [_ "hello"]))
+
+(struct atomic (atom) #:transparent)
+
+(struct atomic-assignment (var expr) #:transparent)
+
+(define (a-normal-minus e e2)
+  "hello")
+
+(define (a-normal-compare e)
+  "hello")
+
+(define (a-normalize-if-expression c e e2)
+  "hello")
+
+(define (a-normal-and e e2)
+  "hello")
+
+(define (a-normal-or e e2)
+  "hello")
+
+(define (a-normal-not e)
+  "hello")
+
+(define (a-normal-print e)
+  "hello")
