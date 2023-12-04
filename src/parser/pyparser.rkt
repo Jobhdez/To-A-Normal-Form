@@ -113,7 +113,7 @@ LFun ::= def … stmt …
                (py-cmp (py-less $1 $3))]
               [(expr LESSEQ expr)
                (py-cmp (py-less-eq $1 $3))]
-              [(expr GREATER expr)
+              [(expr GREATER expr) 
                (py-cmp (py-greater $1 $3))]
               [(expr GREATEREQ expr)
                (py-cmp (py-greater-eq $1 $3))]
