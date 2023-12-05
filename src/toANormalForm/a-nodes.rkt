@@ -5,3 +5,5 @@
 (struct atomic (atom) #:transparent)
 
 (struct atomic-assignment (var expr) #:transparent)
+
+(struct atomic-plus (e e2) #:transparent)
