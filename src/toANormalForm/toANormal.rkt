@@ -104,7 +104,6 @@
 
   (flatten (map to-normal-form (py-module-statements ast))))
        
-
 (define (a-normal-assign var e)
   (match e
     [(list (atomic-assignment var2 (py-neg expr))
@@ -115,6 +114,7 @@
      (atomic-assignment var e)]
      
     [_ (raise-argument-error 'Invalid-Exp "ast?" e)]))
+
 (define (a-normal-plus e e2)
   (match e2
     [(atomic-assignment var  (py-neg n))
