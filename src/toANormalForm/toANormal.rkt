@@ -69,9 +69,12 @@
        (atomic ast)]
 
       [(py-plus e e2)
-       (if (and (py-num? e) (py-neg? e2))
-           (a-normal-plus (to-normal-form e) (to-normal-form e2))
-           'hello)]
+       (match* (e e2)
+         [((? py-num? a) (? py-neg? b))
+          (a-normal-plus (to-normal-form a) (to-normal-form b))]
+
+         [((? py-num? a) (? py-num? b))
+          (a-normal-plus (to-normal-form a) (to-normal-form b))])]
 
       [(py-minus e e2)
        (a-normal-minus (to-normal-form e) (to-normal-form e2))]
@@ -100,20 +103,30 @@
       [_ (raise-argument-error 'Invalid-Exp-AST "ast?" ast)]))
 
   (flatten (map to-normal-form (py-module-statements ast))))
-
+       
 
 (define (a-normal-assign var e)
   (match e
-    [(list (atomic-assignment var2 (py-neg expr)) (atomic-assignment var3 (atomic (py-num expr2))))
-     (list (first e) (atomic-assignment var (py-plus var3 (atomic (py-num expr2)))))]
-    [_ (raise-argument-error 'Invalid-Exp "ast?" e)]))
+    [(list (atomic-assignment var2 (py-neg expr))
+           (atomic-assignment var3 (atomic (py-num expr2))))
+     (list (first e) (atomic-assignment var (atomic-plus var3 (atomic (py-num expr2)))))]
 
+    [(atomic-plus expr expr2)
+     (atomic-assignment var e)]
+     
+    [_ (raise-argument-error 'Invalid-Exp "ast?" e)]))
 (define (a-normal-plus e e2)
   (match e2
     [(atomic-assignment var  (py-neg n))
      (match e
        [(atomic (py-num n2))
         (list e2 (atomic-assignment var (atomic (py-num n2))))])]
+    
+    [(atomic (py-num n))
+     (match e
+       [(atomic (py-num n2))
+        (atomic-plus e e2)])]
+    
     [_ "hello"]))
 
 (define (a-normal-minus e e2)
