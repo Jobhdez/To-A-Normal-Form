@@ -44,11 +44,14 @@
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
 (define (program-to-a-normal-form ast)
+
+  (define counter (make-parameter 0))
+
   (define (generate-temp-name name)
-    (let* [(counter 0)
-          (name* (string-append name (number->string counter)))]
-      (begin (set! counter (+ counter 1))
-             name*)))
+    (let* [(current-counter (counter))
+           (name* (string-append name (number->string current-counter)))]
+      (counter (+ current-counter 1))
+      name*))
   
   (define (to-normal-form ast)
     (match ast
