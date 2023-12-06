@@ -95,7 +95,9 @@
        (a-normal-not (to-normal-form e))]
 
       [(py-print e)
-       (a-normal-print (to-normal-form e))]
+       (let* [(temp-var-name (generate-temp-name "temp_"))
+              (anf-var (to-normal-form (py-id temp-var-name)))]
+       (a-normal-print (to-normal-form e) anf-var))]
 
       [(py-assign var e)
        (a-normal-assign (to-normal-form var) (to-normal-form e))]
@@ -147,5 +149,12 @@
 (define (a-normal-not e)
   "hello")
 
-(define (a-normal-print e)
-  "hello")
+(define (a-normal-print e anf-var)
+  (match e
+    [(atomic-plus a b)
+     (match* (a b)
+       [((? atomic? aa) (? atomic? bb))
+        (list (atomic-assignment anf-var e)
+              (atomic-print anf-var))])]
+    [(? atomic? a)
+     (atomic-print a)]))
