@@ -7,3 +7,5 @@
 (struct atomic-assignment (var expr) #:transparent)
 
 (struct atomic-plus (e e2) #:transparent)
+
+(struct atomic-print (e) #:transparent)
