@@ -71,10 +71,14 @@
       [(py-plus e e2)
        (match* (e e2)
          [((? py-num? a) (? py-neg? b))
-          (a-normal-plus (to-normal-form a) (to-normal-form b))]
+          (let [(a-normal-num (to-normal-form a))
+                (a-normal-neg (to-normal-form b))]
+            (match a-normal-neg
+              [(atomic-assignment var e3)
+               (plusNegSeq a-normal-neg (atomic-plus a-normal-num var))]))]
 
          [((? py-num? a) (? py-num? b))
-          (a-normal-plus (to-normal-form a) (to-normal-form b))])]
+          "hello"])]
 
       [(py-minus e e2)
        (a-normal-minus (to-normal-form e) (to-normal-form e2))]
@@ -100,36 +104,18 @@
        (a-normal-print (to-normal-form e) anf-var))]
 
       [(py-assign var e)
-       (a-normal-assign (to-normal-form var) (to-normal-form e))]
+       (let [(atomic-var (to-normal-form var))
+             (atomic-exp (to-normal-form e))]
+         (match atomic-exp
+           [(plusNegSeq x y)
+            (atomicSeq x (atomic-assignment atomic-var y))]))]
 
       [_ (raise-argument-error 'Invalid-Exp-AST "ast?" ast)]))
 
   (flatten (map to-normal-form (py-module-statements ast))))
-       
-(define (a-normal-assign var e)
-  (match e
-    [(list (atomic-assignment var2 (py-neg expr))
-           (atomic-assignment var3 (atomic (py-num expr2))))
-     (list (first e) (atomic-assignment var (atomic-plus var3 (atomic (py-num expr2)))))]
 
-    [(atomic-plus expr expr2)
-     (atomic-assignment var e)]
-     
-    [_ (raise-argument-error 'Invalid-Exp "ast?" e)]))
-
-(define (a-normal-plus e e2)
-  (match e2
-    [(atomic-assignment var  (py-neg n))
-     (match e
-       [(atomic (py-num n2))
-        (list e2 (atomic-assignment var (atomic (py-num n2))))])]
-    
-    [(atomic (py-num n))
-     (match e
-       [(atomic (py-num n2))
-        (atomic-plus e e2)])]
-    
-    [_ "hello"]))
+(struct plusNegSeq (assignment plus) #:transparent)
+(struct atomicSeq (e e2) #:transparent)
 
 (define (a-normal-minus e e2)
   "hello")
