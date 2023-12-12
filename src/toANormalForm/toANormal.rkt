@@ -1,6 +1,6 @@
 #lang racket
 
-(provide program-to-a-normal-form)
+(provide parse-tree-to-anf)
 
 (require "../parser/pyparser.rkt"
          "../parser/nodes.rkt"
@@ -43,7 +43,7 @@
 ;;;
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
-(define (program-to-a-normal-form ast)
+(define (parse-tree-to-anf ast)
 
   (define counter (make-parameter 0))
 
@@ -53,7 +53,7 @@
       (counter (+ current-counter 1))
       name*))
   
-  (define (to-normal-form ast)
+  (define (to-anf ast)
     (match ast
       [(py-num n)
        (atomic ast)]
@@ -71,48 +71,48 @@
       [(py-plus e e2)
        (match* (e e2)
          [((? py-num? a) (? py-neg? b))
-          (let [(a-normal-num (to-normal-form a))
-                (a-normal-neg (to-normal-form b))]
+          (let [(a-normal-num (to-anf a))
+                (a-normal-neg (to-anf b))]
             (match a-normal-neg
               [(atomic-assignment var e3)
                (plusNegSeq a-normal-neg (atomic-plus a-normal-num var))]))]
 
          [((? py-num? a) (? py-num? b))
-          "hello"])]
+          (atomic-plus (to-anf a) (to-anf b))])]
 
       [(py-minus e e2)
-       (a-normal-minus (to-normal-form e) (to-normal-form e2))]
+       (a-normal-minus (to-anf e) (to-anf e2))]
 
       [(py-cmp e)
-       (a-normal-compare (to-normal-form e))]
+       (a-normal-compare (to-anf e))]
 
       [(py-if-exp cond-exp then-exp else-exp)
        (a-normalize-if-expression ast)]
 
       [(py-and e e2)
-       (a-normal-and (to-normal-form e) (to-normal-form e2))]
+       (a-normal-and (to-anf e) (to-anf e2))]
 
       [(py-or e e2)
-       (a-normal-or (to-normal-form e) (to-normal-form e2))]
+       (a-normal-or (to-anf e) (to-anf e2))]
 
       [(py-not e)
-       (a-normal-not (to-normal-form e))]
+       (a-normal-not (to-anf e))]
 
       [(py-print e)
        (let* [(temp-var-name (generate-temp-name "temp_"))
-              (anf-var (to-normal-form (py-id temp-var-name)))]
-       (a-normal-print (to-normal-form e) anf-var))]
+              (anf-var (to-anf (py-id temp-var-name)))]
+       (a-normal-print (to-anf e) anf-var))]
 
       [(py-assign var e)
-       (let [(atomic-var (to-normal-form var))
-             (atomic-exp (to-normal-form e))]
+       (let [(atomic-var (to-anf var))
+             (atomic-exp (to-anf e))]
          (match atomic-exp
            [(plusNegSeq x y)
             (atomicSeq x (atomic-assignment atomic-var y))]))]
 
       [_ (raise-argument-error 'Invalid-Exp-AST "ast?" ast)]))
 
-  (flatten (map to-normal-form (py-module-statements ast))))
+  (flatten (map to-anf (py-module-statements ast))))
 
 (struct plusNegSeq (assignment plus) #:transparent)
 (struct atomicSeq (e e2) #:transparent)
