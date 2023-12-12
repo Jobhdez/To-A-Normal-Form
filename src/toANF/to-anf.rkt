@@ -43,7 +43,7 @@
 ;;;
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
-(define (parse-tree-to-anf ast)
+(define (ast-to-anf ast)
 
   (define counter (make-parameter 0))
 
