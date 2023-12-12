@@ -108,7 +108,10 @@
              (atomic-exp (to-anf e))]
          (match atomic-exp
            [(plusNegSeq x y)
-            (atomicSeq x (atomic-assignment atomic-var y))]))]
+            (atomicSeq x (atomic-assignment atomic-var y))]
+
+           [(atomic-plus (? atomic? a) (? atomic? b))
+            (atomic-assignment atomic-var atomic-exp)]))]
 
       [_ (raise-argument-error 'Invalid-Exp-AST "ast?" ast)]))
 
