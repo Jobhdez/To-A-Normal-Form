@@ -1,10 +1,10 @@
 #lang racket
 
-(provide parse-tree-to-anf)
+(provide syntax-ast-to-anf)
 
 (require "../parser/pyparser.rkt"
          "../parser/nodes.rkt"
-         "a-nodes.rkt")
+         "anf-ast.rkt")
 
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
@@ -43,7 +43,7 @@
 ;;;
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
-(define (ast-to-anf ast)
+(define (syntax-ast-to-anf ast)
 
   (define counter (make-parameter 0))
 
@@ -76,12 +76,21 @@
             (match a-normal-neg
               [(atomic-assignment var e3)
                (plusNegSeq a-normal-neg (atomic-plus a-normal-num var))]))]
-
+         
+         [((? py-neg? a) (? py-num? b))
+          (let [(anf-neg (to-anf a))
+                (anf-num (to-anf b))]
+            (match anf-neg
+              [(atomic-assignment var e3)
+               (plusNegSeq anf-neg (atomic-plus anf-num var))]))]
+           
          [((? py-num? a) (? py-num? b))
-          (atomic-plus (to-anf a) (to-anf b))])]
+          (atomic-plus (to-anf a) (to-anf b))]
+
+         [(_ _) (atomic-plus (to-anf e) (to-anf e2))])]
 
       [(py-minus e e2)
-       (a-normal-minus (to-anf e) (to-anf e2))]
+       "Not Implemented"]
 
       [(py-cmp e)
        (a-normal-compare (to-anf e))]
