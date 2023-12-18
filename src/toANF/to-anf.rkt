@@ -60,7 +60,7 @@
       
       [(py-neg n)
        (atomic-assignment (atomic (py-id (generate-temp-name "temp_")))
-                         ast)]
+                         (atomic ast))]
 
       [(py-id n)
        (atomic ast)]
@@ -90,7 +90,19 @@
          [(_ _) (atomic-plus (to-anf e) (to-anf e2))])]
 
       [(py-minus e e2)
-       "Not Implemented"]
+       (match* (e e2)
+         [((? py-num? a) (? py-neg? b))
+          (let [(anf-num (to-anf a))
+                (anf-neg (to-anf b))]
+            (match anf-neg
+              [(atomic-assignment var e3)
+               (minusNegSeq anf-neg (atomic-minus anf-num var))]))]
+         [((? py-neg? a) (? py-num? b))
+          (let [(anf-neg (to-anf a))
+                (anf-num (to-anf b))]
+            (match anf-neg
+              [(atomic-assignment var e3)
+               (minusNegSeq anf-neg (atomic-minus anf-num var))]))])]
 
       [(py-cmp e)
        (a-normal-compare (to-anf e))]
@@ -120,7 +132,10 @@
             (atomicSeq x (atomic-assignment atomic-var y))]
 
            [(atomic-plus (? atomic? a) (? atomic? b))
-            (atomic-assignment atomic-var atomic-exp)]))]
+            (atomic-assignment atomic-var atomic-exp)]
+
+           [(minusNegSeq x y)
+            (atomicSeq x (atomic-assignment atomic-var y))]))]
 
       [_ (raise-argument-error 'Invalid-Exp-AST "ast?" ast)]))
 
@@ -128,6 +143,8 @@
 
 (struct plusNegSeq (assignment plus) #:transparent)
 (struct atomicSeq (e e2) #:transparent)
+(struct minusNegSeq (assignment minus) #:transparent)
+
 
 (define (a-normal-minus e e2)
   "hello")
