@@ -9,3 +9,5 @@
 (struct atomic-plus (e e2) #:transparent)
 
 (struct atomic-print (e) #:transparent)
+
+(struct atomic-minus (e e2) #:transparent)
