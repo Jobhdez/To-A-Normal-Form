@@ -105,7 +105,9 @@
                (minusNegSeq anf-neg (atomic-minus anf-num var))]))])]
 
       [(py-cmp e)
-       "Not implemented"]
+       (match e
+         [(py-equiv (? py-bool? b1) (? py-bool? b2))
+          (anf-equiv (to-anf b1) (to-anf b2))])]
 
       [(py-if-exp cond-exp then-exp else-exp)
        "Not Implemented"]
