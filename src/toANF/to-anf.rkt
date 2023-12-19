@@ -116,7 +116,13 @@
           (anf-less (to-anf b1) (to-anf b2))]
 
          [(py-less (? py-num? n1) (? py-num? n2))
-          (anf-less (to-anf n1) (to-anf n2))])]
+          (anf-less (to-anf n1) (to-anf n2))]
+
+         [(py-greater (? py-bool? b1) (? py-bool? b2))
+          (anf-greater (to-anf b1) (to-anf b2))]
+
+         [(py-greater (? py-num? n1) (? py-num? n2))
+          (anf-greater (to-anf n1) (to-anf n2))])]
 
       [(py-if-exp cond-exp then-exp else-exp)
        "Not Implemented"]
