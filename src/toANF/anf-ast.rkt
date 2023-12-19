@@ -17,3 +17,5 @@
 (struct anf-equiv (e e2) #:transparent)
 
 (struct anf-less (e e2) #:transparent)
+
+(struct anf-greater (e e2) #:transparent)
