@@ -127,7 +127,17 @@
             (match* (a b)
               [((? py-num? aa) (? py-num? bb))
                (printSeq (atomic-assignment anf-var (to-anf e))
-                         (atomic-print anf-var))])]
+                         (atomic-print anf-var))]
+
+              [((? py-num? aa) (? py-neg? bb))
+               (let [(sum-neg-seq-anf (to-anf e))]
+                 (match sum-neg-seq-anf
+                   [(plusNegSeq (atomic-assignment var e2) (atomic-plus a-normal-num var))
+                    (let [(intermediary (atomic (py-id (generate-temp-name "temp_"))))]
+                      (list (atomic-assignment var e2)
+                            (printSeq (atomic-assignment intermediary
+                                                         (atomic-plus a-normal-num var))
+                                      (atomic-print intermediary))))]))])]
 
            [(? py-neg? a)
             (let [(neg-anf (to-anf a))]
@@ -159,6 +169,7 @@
 (struct atomicSeq (e e2) #:transparent)
 (struct minusNegSeq (assignment minus) #:transparent)
 (struct printSeq (assignment printstm) #:transparent)
+
 (define (a-normal-minus e e2)
   "hello")
 
