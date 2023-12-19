@@ -15,3 +15,5 @@
 (struct anf-bool (bool) #:transparent)
 
 (struct anf-equiv (e e2) #:transparent)
+
+(struct anf-less (e e2) #:transparent)
