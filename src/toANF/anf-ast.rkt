@@ -13,3 +13,5 @@
 (struct atomic-minus (e e2) #:transparent)
 
 (struct anf-bool (bool) #:transparent)
+
+(struct anf-equiv (e e2) #:transparent)
