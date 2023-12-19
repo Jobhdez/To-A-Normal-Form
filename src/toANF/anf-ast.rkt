@@ -11,3 +11,5 @@
 (struct atomic-print (e) #:transparent)
 
 (struct atomic-minus (e e2) #:transparent)
+
+(struct anf-bool (bool) #:transparent)
