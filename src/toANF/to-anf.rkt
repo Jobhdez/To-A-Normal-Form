@@ -117,7 +117,9 @@
        "not implemented"]
 
       [(py-not e)
-       "Not implemented"]
+       (match e
+         [(? py-bool? bool)
+          (anf-bool (to-anf bool))])]
 
       [(py-print e)
        (let* [(temp-var-name (generate-temp-name "temp_"))
