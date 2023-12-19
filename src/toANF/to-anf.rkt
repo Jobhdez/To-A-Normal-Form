@@ -107,7 +107,10 @@
       [(py-cmp e)
        (match e
          [(py-equiv (? py-bool? b1) (? py-bool? b2))
-          (anf-equiv (to-anf b1) (to-anf b2))])]
+          (anf-equiv (to-anf b1) (to-anf b2))]
+
+         [(py-equiv (? py-num? n1) (? py-num? n2))
+          (anf-equiv (to-anf n1) (to-anf n2))])]
 
       [(py-if-exp cond-exp then-exp else-exp)
        "Not Implemented"]
