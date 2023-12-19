@@ -60,8 +60,7 @@
       
       [(py-neg n)
        (atomic-assignment (atomic (py-id (generate-temp-name "temp_")))
-                         (atomic ast))]
-
+                          (atomic ast))]
       [(py-id n)
        (atomic ast)]
       
@@ -97,6 +96,7 @@
             (match anf-neg
               [(atomic-assignment var e3)
                (minusNegSeq anf-neg (atomic-minus anf-num var))]))]
+         
          [((? py-neg? a) (? py-num? b))
           (let [(anf-neg (to-anf a))
                 (anf-num (to-anf b))]
@@ -105,19 +105,19 @@
                (minusNegSeq anf-neg (atomic-minus anf-num var))]))])]
 
       [(py-cmp e)
-       (a-normal-compare (to-anf e))]
+       "Not implemented"]
 
       [(py-if-exp cond-exp then-exp else-exp)
-       (a-normalize-if-expression ast)]
+       "Not Implemented"]
 
       [(py-and e e2)
-       (a-normal-and (to-anf e) (to-anf e2))]
+       "Not Implemented"]
 
       [(py-or e e2)
-       (a-normal-or (to-anf e) (to-anf e2))]
+       "not implemented"]
 
       [(py-not e)
-       (a-normal-not (to-anf e))]
+       "Not implemented"]
 
       [(py-print e)
        (let* [(temp-var-name (generate-temp-name "temp_"))
@@ -166,24 +166,9 @@
   (flatten (map to-anf (py-module-statements ast))))
 
 (struct plusNegSeq (assignment plus) #:transparent)
+
 (struct atomicSeq (e e2) #:transparent)
+
 (struct minusNegSeq (assignment minus) #:transparent)
+
 (struct printSeq (assignment printstm) #:transparent)
-
-(define (a-normal-minus e e2)
-  "hello")
-
-(define (a-normal-compare e)
-  "hello")
-
-(define (a-normalize-if-expression c e e2)
-  "hello")
-
-(define (a-normal-and e e2)
-  "hello")
-
-(define (a-normal-or e e2)
-  "hello")
-
-(define (a-normal-not e)
-  "hello")
