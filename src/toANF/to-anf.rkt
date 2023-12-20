@@ -150,9 +150,9 @@
             (list (atomic-assignment (atomic (py-id temp-name)) (to-anf cnd))
                   (atomic-assignment (atomic (py-id temp-name2))
                                      (to-anf (py-if-exp (py-id temp-name)
-                                                        (to-anf thn)
-                                                        (to-anf els))))
-                  (to-anf (py-if-exp (py-id temp-name2) (to-anf then-exp) (to-anf else-exp)))))])]
+                                                        thn
+                                                        els)))
+                  (to-anf (py-if-exp (py-id temp-name2) then-exp else-exp))))])]
       [(py-and e e2)
        "Not Implemented"]
 
@@ -210,6 +210,7 @@
 
   (flatten (map to-anf (py-module-statements ast))))
 
+
 (struct plusNegSeq (assignment plus) #:transparent)
 
 (struct atomicSeq (e e2) #:transparent)
@@ -220,10 +221,20 @@
 
 (struct ifExpSeq (e e2) #:transparent)
 
-(define (ifexp-to-anf if-exp)
-  (match if-exp
-    [(py-if-exp cnd thn els)
-     (list (gensym "temp") (ifexp-to-anf cnd))]
-    [(py-bool b)
-     (py-bool b)]
-    [_ if-exp]))
+(define (restructure-anf-ast exps)
+  
+  (define (replace-last-item lst var)
+    (if (null? lst)
+        '()
+        (if (null? (cdr lst))
+            (list (atomic-assignment var (car lst)))
+            (cons (car lst) (replace-last-item (cdr lst) var)))))
+  
+  (define (restructure* ast)
+    (match ast
+      [(atomic-assignment (atomic atm) (? list? exps))
+       (replace-last-item exps (atomic atm))]
+      [_ ast]))
+
+  (map restructure* exps))
+  
