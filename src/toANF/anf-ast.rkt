@@ -21,3 +21,5 @@
 (struct anf-greater (e e2) #:transparent)
 
 (struct anf-equiv-not (e e2) #:transparent)
+
+(struct anf-if-exp (cnd thn els) #:transparent)
