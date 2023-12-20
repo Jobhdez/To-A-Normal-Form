@@ -47,6 +47,9 @@
 
   (define counter (make-parameter 0))
 
+  (define tempif (make-parameter "tempif-"))
+  (define counterif (make-parameter 0))
+  
   (define (generate-temp-name name)
     (let* [(current-counter (counter))
            (name* (string-append name (number->string current-counter)))]
@@ -66,6 +69,9 @@
       
       [(py-bool b)
        (atomic ast)]
+
+      [(? atomic? atm)
+       atm]
 
       [(py-plus e e2)
        (match* (e e2)
@@ -131,8 +137,22 @@
           (anf-equiv-not (to-anf n1) (to-anf n2))])]
 
       [(py-if-exp cond-exp then-exp else-exp)
-       "Not Implemented"]
+       (match cond-exp
+         [(? py-bool? b1)
+          (anf-if-exp (to-anf b1) (to-anf then-exp) (to-anf else-exp))]
 
+         [(? py-id? id1)
+          (anf-if-exp (to-anf id1) (to-anf then-exp) (to-anf else-exp))]
+         
+         [(py-if-exp cnd thn els)
+          (let* [(temp-name (generate-temp-name "temp_"))
+                 (temp-name2 (generate-temp-name "temp-"))]
+            (list (atomic-assignment (atomic (py-id temp-name)) (to-anf cnd))
+                  (atomic-assignment (atomic (py-id temp-name2))
+                                     (to-anf (py-if-exp (py-id temp-name)
+                                                        (to-anf thn)
+                                                        (to-anf els))))
+                  (to-anf (py-if-exp (py-id temp-name2) (to-anf then-exp) (to-anf else-exp)))))])]
       [(py-and e e2)
        "Not Implemented"]
 
@@ -197,3 +217,13 @@
 (struct minusNegSeq (assignment minus) #:transparent)
 
 (struct printSeq (assignment printstm) #:transparent)
+
+(struct ifExpSeq (e e2) #:transparent)
+
+(define (ifexp-to-anf if-exp)
+  (match if-exp
+    [(py-if-exp cnd thn els)
+     (list (gensym "temp") (ifexp-to-anf cnd))]
+    [(py-bool b)
+     (py-bool b)]
+    [_ if-exp]))
