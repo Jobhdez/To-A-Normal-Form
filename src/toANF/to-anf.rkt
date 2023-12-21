@@ -112,29 +112,17 @@
 
       [(py-cmp e)
        (match e
-         [(py-equiv (? py-bool? b1) (? py-bool? b2))
-          (anf-equiv (to-anf b1) (to-anf b2))]
+         [(py-equiv (? is-atomic? atm) (? is-atomic? atm2))
+          (anf-equiv (to-anf atm) (to-anf atm2))]
 
-         [(py-equiv (? py-num? n1) (? py-num? n2))
-          (anf-equiv (to-anf n1) (to-anf n2))]
+         [(py-less (? is-atomic? atm) (? is-atomic? atm2))
+          (anf-less (to-anf atm) (to-anf atm2))]
 
-         [(py-less (? py-bool? b1) (? py-bool? b2))
-          (anf-less (to-anf b1) (to-anf b2))]
+         [(py-greater (? is-atomic? atm) (? is-atomic? atm2))
+          (anf-greater (to-anf atm) (to-anf atm2))]
 
-         [(py-less (? py-num? n1) (? py-num? n2))
-          (anf-less (to-anf n1) (to-anf n2))]
-
-         [(py-greater (? py-bool? b1) (? py-bool? b2))
-          (anf-greater (to-anf b1) (to-anf b2))]
-
-         [(py-greater (? py-num? n1) (? py-num? n2))
-          (anf-greater (to-anf n1) (to-anf n2))]
-
-         [(py-not-equiv (? py-bool? b1) (? py-bool? b2))
-          (anf-equiv-not (to-anf b1) (to-anf b2))]
-
-         [(py-not-equiv (? py-num? n1) (? py-num? n2))
-          (anf-equiv-not (to-anf n1) (to-anf n2))])]
+         [(py-not-equiv (? is-atomic? atm) (? is-atomic? atm2))
+          (anf-equiv-not (to-anf atm) (to-anf atm2))])]
 
       [(py-if-exp cond-exp then-exp else-exp)
        (match cond-exp
@@ -238,3 +226,9 @@
 
   (map restructure* exps))
   
+(define (is-atomic? ast)
+  (match ast
+    [(py-bool b) #t]
+    [(py-id id) #t]
+    [(py-num? n) #t]
+    [_ #f]))
