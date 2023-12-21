@@ -154,7 +154,7 @@
                                                         els)))
                   (to-anf (py-if-exp (py-id temp-name2) then-exp else-exp))))])]
       [(py-and e e2)
-       "Not Implemented"]
+       (to-anf (py-if-exp e e2 (py-bool 'False)))]
 
       [(py-or e e2)
        "not implemented"]
