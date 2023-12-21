@@ -157,7 +157,7 @@
        (to-anf (py-if-exp e e2 (py-bool 'False)))]
 
       [(py-or e e2)
-       "not implemented"]
+       (to-anf (py-if-exp e (py-bool 'True) e2))]
 
       [(py-not e)
        (match e
