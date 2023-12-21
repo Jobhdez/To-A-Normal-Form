@@ -110,6 +110,20 @@
               [(atomic-assignment var e3)
                (minusNegSeq anf-neg (atomic-minus anf-num var))]))])]
 
+      [(py-while cnd stmts)
+       (match stmts
+         [(? list? stmts*)
+          (define stms (map to-anf stmts*))
+          (define cnd-name (gensym "label-"))
+          (define atm-assign (atomic-assignment (atomic (py-id cnd-name)) (to-anf cnd)))
+          (list atm-assign
+                (anf-while (atomic (py-id cnd-name)) stms))]
+         [_
+          (define cnd-name (gensym "label-"))
+          (list (atomic-assignment (atomic (py-id cnd-name)) (to-anf cnd))
+                (anf-while (atomic (py-id cnd-name))
+                           (to-anf stmts)))])]
+
       [(py-cmp e)
        (match e
          [(py-equiv (? is-atomic? atm) (? is-atomic? atm2))
@@ -179,7 +193,10 @@
                  (printSeq neg-anf (atomic-print var))]))]
            
            [(? py-num? a)
-            (atomic-print (to-anf a))]))]
+            (atomic-print (to-anf a))]
+
+           [(? py-id? id)
+            (atomic-print (to-anf id))]))]
 
       [(py-assign var e)
        (let [(atomic-var (to-anf var))
@@ -192,7 +209,10 @@
             (atomic-assignment atomic-var atomic-exp)]
 
            [(minusNegSeq x y)
-            (atomicSeq x (atomic-assignment atomic-var y))]))]
+            (atomicSeq x (atomic-assignment atomic-var y))]
+
+           [(? atomic atm)
+            (anf-assign atomic-var atomic-exp)]))]
 
       [_ (raise-argument-error 'Invalid-Exp-AST "ast?" ast)]))
 
@@ -230,5 +250,5 @@
   (match ast
     [(py-bool b) #t]
     [(py-id id) #t]
-    [(py-num? n) #t]
+    [(py-num n) #t]
     [_ #f]))
