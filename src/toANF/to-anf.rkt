@@ -145,6 +145,9 @@
 
          [(? py-id? id1)
           (anf-if-exp (to-anf id1) (to-anf then-exp) (to-anf else-exp))]
+
+         [(? py-cmp? cmp)
+          (anf-if-exp (to-anf cmp) (to-anf then-exp) (to-anf else-exp))]
          
          [(py-if-exp cnd thn els)
           (let* [(temp-name (generate-temp-name "temp_"))
