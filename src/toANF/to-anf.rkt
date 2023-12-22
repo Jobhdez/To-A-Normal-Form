@@ -150,7 +150,7 @@
           (anf-if-exp (to-anf cmp) (to-anf then-exp) (to-anf else-exp))]
          
          [(py-if-exp cnd thn els)
-          (let* [(temp-name (generate-temp-name "temp_"))
+          (let* [(temp-name (generate-temp-name "temp-"))
                  (temp-name2 (generate-temp-name "temp-"))]
             (list (atomic-assignment (atomic (py-id temp-name)) (to-anf cnd))
                   (atomic-assignment (atomic (py-id temp-name2))
@@ -170,7 +170,7 @@
           (anf-bool (to-anf bool))])]
 
       [(py-print e)
-       (let* [(temp-var-name (generate-temp-name "temp_"))
+       (let* [(temp-var-name (generate-temp-name "temp-"))
               (anf-var (to-anf (py-id temp-var-name)))]
          (match e
            [(py-plus a b)
