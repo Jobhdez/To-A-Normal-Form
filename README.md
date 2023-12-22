@@ -39,3 +39,69 @@ toANormal.rkt> (program-to-a-normal-form ast)
  (atomic-assignment (atomic (py-id 'k)) (atomic-plus (atomic (py-id "temp_2")) (atomic (py-num 5)))))
 toANormal.rkt>
 ```
+## Example 3
+
+```racket
+to-anf.rkt> (define p (open-input-string "if if if if True then True else False then True else False then True else False then 1 else 3"))
+to-anf.rkt> (define ast (the-parser (lambda () (the-lexer/tokens p))))
+to-anf.rkt> ast
+(py-module
+ (list
+  (py-if-exp
+   (py-if-exp
+    (py-if-exp
+     (py-if-exp (py-bool 'True) (py-bool 'True) (py-bool 'False))
+     (py-bool 'True)
+     (py-bool 'False))
+    (py-bool 'True)
+    (py-bool 'False))
+   (py-num 1)
+   (py-num 3))))
+to-anf.rkt> (define anf (syntax-ast-to-anf ast))
+to-anf.rkt> anf 
+(list
+ (atomic-assignment
+  (atomic (py-id "temp_0"))
+  (list
+   (atomic-assignment (atomic (py-id "temp_2")) (atomic (py-bool 'True)))
+   (atomic-assignment
+    (atomic (py-id "temp-3"))
+    (anf-if-exp
+     (atomic (py-id "temp_2"))
+     (atomic (py-bool 'True))
+     (atomic (py-bool 'False))))
+   (anf-if-exp
+    (atomic (py-id "temp-3"))
+    (atomic (py-bool 'True))
+    (atomic (py-bool 'False)))))
+ (atomic-assignment
+  (atomic (py-id "temp-1"))
+  (anf-if-exp
+   (atomic (py-id "temp_0"))
+   (atomic (py-bool 'True))
+   (atomic (py-bool 'False))))
+ (anf-if-exp (atomic (py-id "temp-1")) (atomic (py-num 1)) (atomic (py-num 3))))
+to-anf.rkt> (restructure-anf-ast anf)
+(list
+ (list
+  (atomic-assignment (atomic (py-id "temp_2")) (atomic (py-bool 'True)))
+  (atomic-assignment
+   (atomic (py-id "temp-3"))
+   (anf-if-exp
+    (atomic (py-id "temp_2"))
+    (atomic (py-bool 'True))
+    (atomic (py-bool 'False))))
+  (atomic-assignment
+   (atomic (py-id "temp_0"))
+   (anf-if-exp
+    (atomic (py-id "temp-3"))
+    (atomic (py-bool 'True))
+    (atomic (py-bool 'False)))))
+ (atomic-assignment
+  (atomic (py-id "temp-1"))
+  (anf-if-exp
+   (atomic (py-id "temp_0"))
+   (atomic (py-bool 'True))
+   (atomic (py-bool 'False))))
+ (anf-if-exp (atomic (py-id "temp-1")) (atomic (py-num 1)) (atomic (py-num 3))))
+```
