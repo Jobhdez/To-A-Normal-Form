@@ -122,12 +122,12 @@ LFun ::= def … stmt …
               [(expr AND expr) (py-and $1 $3)]
               [(expr OR expr) (py-or $1 $3)]
               [(NOT expr) (py-not $2)]
-              [(LPAREN elements RPAREN) (py-tuple (list $2))]
+              [(LPAREN elements RPAREN) (py-tuple $2)]
               [(expr LBRACKET NUM RBRACKET)
                (py-tuple-index $1 $3)]
               [(LEN LPAREN expr RPAREN)
                 (py-tuple-len $3)]]
-    [elements [(NUM) (py-num $1)]
-              [(NUM elements) (list $1 $2)]]
+    [elements [(expr) (list $1)]
+              [(expr elements) (cons $1 $2)]]
     [args    [(ID) (py-id $1)]
              [(ID args) (list $1 $2)]]]))
