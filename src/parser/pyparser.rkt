@@ -130,4 +130,4 @@ LFun ::= def … stmt …
     [elements [(expr) (list $1)]
               [(expr elements) (cons $1 $2)]]
     [args    [(ID) (py-id $1)]
-             [(ID args) (list $1 $2)]]]))
+             [(ID args) (cons (py-id $1) $2)]]]))
