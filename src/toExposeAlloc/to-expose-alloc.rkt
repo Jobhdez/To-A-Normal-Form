@@ -29,7 +29,7 @@
      (define bytes* (+ (* (length exps) 8) 8))
      
      (define assignments (for/list ([e exps])
-                           (py-assign (generate-temp-var "x") e)))
+                           (py-assign (py-id (generate-temp-var "x")) e)))
      
      (define if-exp (py-if-exp (py-cmp (py-less (py-plus (global-value (py-id "free_ptr")) (py-num bytes*)) (global-value (py-id "fromspace_end"))))
                                (py-num 0)
