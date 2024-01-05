@@ -1,6 +1,7 @@
 #lang racket
 
-(provide the-parser
+(provide parse-expression
+         the-parser
          the-lexer/tokens)
 
 (require "nodes.rkt"
@@ -35,6 +36,9 @@ stmt ::= var : type = exp
 LFun ::= def … stmt …
 |#
 
+(define (parse-expression expr)
+  (define p (open-input-string expr))
+  (the-parser (lambda () (the-lexer/tokens p))))
 
 (define-tokens value-tokens (NUM ID PLUS MINUS ASSIGN PRINT DEF AND OR NOT IF ELSE WHILE MUL EQUIV NOTEQUIV GREATER LESS LESSEQ GREATEREQ TRUE FALSE COLON LPAREN RPAREN SEMICOLON RBRACKET LBRACKET LEN THEN))
 
