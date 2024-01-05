@@ -17,7 +17,6 @@
 (struct py-fun (name arguments statements) #:transparent)
 
 (struct py-id (var) #:transparent)
-
 (struct py-num (n) #:transparent)
 
 (struct py-plus (n1 n2) #:transparent)
@@ -38,7 +37,7 @@
 
 (struct py-tuple (t) #:transparent)
 
-(struct py-tuple-index (t) #:transparent)
+(struct py-tuple-index (e index) #:transparent)
 
 (struct py-tuple-len (t) #:transparent)
 
