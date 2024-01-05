@@ -1,6 +1,6 @@
 #lang racket
 
-(provide syntax-ast-to-anf)
+(provide syntax->anf)
 
 (require "../parser/pyparser.rkt"
          "../parser/nodes.rkt"
@@ -43,7 +43,7 @@
 ;;;
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
-(define (syntax-ast-to-anf ast)
+(define (syntax->anf ast)
 
   (define counter (make-parameter 0))
   
