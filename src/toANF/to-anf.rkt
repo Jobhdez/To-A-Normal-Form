@@ -46,9 +46,6 @@
 (define (syntax-ast-to-anf ast)
 
   (define counter (make-parameter 0))
-
-  (define tempif (make-parameter "tempif-"))
-  (define counterif (make-parameter 0))
   
   (define (generate-temp-name name)
     (let* [(current-counter (counter))
