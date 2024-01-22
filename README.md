@@ -1,5 +1,6 @@
 # serotonin
-will be a compiler for a high level language. I did a similar one in common lisp: https://github.com/jobhdez/zettapy but I want to make one that is better.
+This is a small program that takes a small subset of a Python like language and converts it to a normal form.
+
 
 ## Example 1
 
